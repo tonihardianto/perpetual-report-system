@@ -1,0 +1,19 @@
+
+[data-layout=horizontal] #page-topbar {
+    left: 0;
+    border-bottom: 1px solid var(--vz-header-border);
+    height: 50px;
+}
+
+.navbar-menu {
+    top: -20px !important;
+}
+
+.navbar-header {
+    height: 50px !important;
+}
+.topbar-user {
+    background-color: var(--vz-topbar-user-bg);
+    top: 0 !important;
+    height: 50px !important;
+}
