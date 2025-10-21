@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Obat;
+use App\Imports\ObatsImport;
+use Maatwebsite\Excel\Facades\Excel;
+use Exception;
 use Illuminate\Http\Request;
 
 class MasterObatController extends Controller
@@ -10,11 +13,21 @@ class MasterObatController extends Controller
     /**
      * Menampilkan daftar Master Obat.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $obats = Obat::with('batches') 
-                      ->orderBy('nama_obat')
-                      ->paginate(10);
+        $search = $request->input('search');
+
+        $query = Obat::with('batches')->orderBy('nama_obat');
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('kode_obat', 'like', "%{$search}%")
+                  ->orWhere('nama_obat', 'like', "%{$search}%");
+            });
+        }
+
+        $obats = $query->paginate(10)->withQueryString();
+
         return view('master.obat.index', compact('obats'));
     }
 
@@ -92,5 +105,48 @@ class MasterObatController extends Controller
         } catch (\Exception $e) {
             return redirect()->route('master-obat.index')->with('error', 'Gagal menghapus obat karena sudah ada data transaksi terkait.');
         }
+    }
+
+    /**
+     * Handle import data obat dari Excel.
+     */
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls',
+        ]);
+
+        try {
+            Excel::import(new ObatsImport, $request->file('file'));
+
+            return redirect()->route('master-obat.index')->with('success', 'Data obat berhasil diimpor!');
+        } catch (Exception $e) {
+            return redirect()->route('master-obat.index')->with('error', 'Terjadi kesalahan saat mengimpor data: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Menangani pencarian data obat untuk Select2 AJAX.
+     */
+    public function select2Search(Request $request)
+    {
+        $searchTerm = $request->input('term');
+
+        $query = Obat::where('is_aktif', true)
+            ->where(function ($q) use ($searchTerm) {
+                $q->where('nama_obat', 'LIKE', '%' . $searchTerm . '%')
+                  ->orWhere('kode_obat', 'LIKE', '%' . $searchTerm . '%');
+            })
+            ->orderBy('nama_obat', 'asc')
+            ->limit(20); // Batasi hasil untuk performa
+
+        $results = $query->get()->map(function ($obat) {
+            return [
+                'id' => $obat->id,
+                'text' => '[' . $obat->kode_obat . '] ' . $obat->nama_obat,
+            ];
+        });
+
+        return response()->json(['results' => $results]);
     }
 }

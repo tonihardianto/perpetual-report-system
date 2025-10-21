@@ -22,9 +22,9 @@
         <!-- ============================================================== -->
         <!-- Start right Content here -->
         <!-- ============================================================== -->
-        <div class="main-content">
+        <div class="main-content mt-n4">
             <div class="page-content">
-                <div class="container-fluid">
+                <div class="container-fluid ">
                     @yield('content')
                 </div>
                 <!-- container-fluid -->

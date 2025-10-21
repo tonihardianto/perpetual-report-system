@@ -40,7 +40,7 @@ class TransaksiMutasiController extends Controller
             ]);
         }
 
-        $mutasi = $query->paginate(20);
+        $mutasi = $query->paginate(10)->withQueryString();
 
         // Data untuk dropdown filter
         $tipe_transaksi_list = TransaksiMutasi::select('tipe_transaksi')->distinct()->pluck('tipe_transaksi');

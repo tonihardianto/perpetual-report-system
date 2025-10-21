@@ -34,6 +34,10 @@ Route::middleware('auth')->group(function () {
     // 🧱 Master Obat
     // =====================================================
     Route::resource('master-obat', MasterObatController::class);
+    Route::post('master-obat/import', [MasterObatController::class, 'import'])->name('master-obat.import');
+    // Route untuk pencarian obat via Select2 AJAX
+    Route::get('select2/obat', [MasterObatController::class, 'select2Search'])->name('select2.obat.search');
+
     Route::get('transaksi-index', [TransaksiMutasiController::class, 'index'])->name('transaksi.mutasi.index'); 
     Route::get('transaksi-masuk', [TransaksiMasukController::class, 'create'])->name('transaksi.masuk.create');
     Route::post('transaksi-masuk', [TransaksiMasukController::class, 'store'])->name('transaksi.masuk.store');

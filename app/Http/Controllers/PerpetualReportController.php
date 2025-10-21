@@ -20,28 +20,35 @@ class PerpetualReportController extends Controller
     public function index(Request $request)
     {
         $tahun = $request->input('tahun', date('Y'));
-        $obatId = $request->input('obat_id') ? (int)$request->input('obat_id') : null;
+        $obatIds = $request->input('obat_id', []);
+        
+        // Get selected obats for displaying in select2
+        $selectedObats = [];
+        if (!empty($obatIds)) {
+            $selectedObats = Obat::whereIn('id', $obatIds)->get();
+        }
         
         $obats = Obat::orderBy('nama_obat')->get();
-        $reportData = collect();
+        $reportData = [];
 
-        if ($request->has('view_report')) {
-            // Kode yang Benar
-            $reportData = $reportService->generatePerpetualReport($year);
+        // Generate report jika ada parameter tahun atau obat_id
+        if ($request->has('tahun') || $request->has('obat_id')) {
+            $reportData = $this->reportService->generatePerpetualReport((int)$tahun, $obatIds);
+            \Log::info('Report Data:', ['count' => count($reportData), 'sample' => !empty($reportData) ? $reportData[0] : null]);
         }
 
         $years = range(date('Y'), 2020); // Tahun laporan dari 2020 hingga tahun ini
         
-        return view('laporan.perpetual.index', compact('reportData', 'obats', 'tahun', 'years', 'obatId'));
+        return view('laporan.perpetual.index', compact('reportData', 'obats', 'tahun', 'years', 'obatIds'));
     }
 
     public function export(Request $request)
     {
         $tahun = $request->input('tahun', date('Y'));
-        $obatId = $request->input('obat_id') ? (int)$request->input('obat_id') : null;
+        $obatIds = $request->input('obat_id', []);
 
         // Ambil data yang sama dengan yang ditampilkan di halaman
-        $reportData = $this->reportService->generatePerpetualReport((int)$tahun, $obatId);
+        $reportData = $this->reportService->generatePerpetualReport((int)$tahun, $obatIds);
 
         $fileName = 'Laporan_Perpetual_' . $tahun . '.xlsx';
         return Excel::download(new LaporanPerpetualExport($reportData, $tahun), $fileName);

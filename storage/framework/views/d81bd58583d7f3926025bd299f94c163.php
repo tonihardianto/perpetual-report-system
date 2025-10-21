@@ -1,17 +1,16 @@
-@extends('layouts.master')
-@section('title') Riwayat Transaksi Stok @endsection
+<?php $__env->startSection('title'); ?> Riwayat Transaksi Stok <?php $__env->stopSection(); ?>
 
-@section('css')
+<?php $__env->startSection('css'); ?>
     <!-- Flatpickr css -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('content')
-@component('components.breadcrumb')
-    @slot('li_1') Transaksi @endslot
-    @slot('title') Riwayat Mutasi Stok (Jurnal Perpetual) @endslot
-@endcomponent
+<?php $__env->startSection('content'); ?>
+<?php $__env->startComponent('components.breadcrumb'); ?>
+    <?php $__env->slot('li_1'); ?> Transaksi <?php $__env->endSlot(); ?>
+    <?php $__env->slot('title'); ?> Riwayat Mutasi Stok (Jurnal Perpetual) <?php $__env->endSlot(); ?>
+<?php echo $__env->renderComponent(); ?>
 
 <div class="row">
     <div class="col-lg-12">
@@ -19,13 +18,13 @@
             <div class="card-header">
                 <h4 class="card-title mb-0">Filter Riwayat Transaksi</h4>
             </div><div class="card-body">
-                <form method="GET" action="{{ route('transaksi.mutasi.index') }}">
+                <form method="GET" action="<?php echo e(route('transaksi.mutasi.index')); ?>">
                     <div class="row g-3">
                         <div class="col-md-3">
                             <label for="start_date" class="form-label">Tanggal Mulai</label>
                             <div class="position-relative">
                                 <input type="text" class="form-control flatpickr" id="start_date" name="start_date" 
-                                       placeholder="Pilih tanggal mulai..." value="{{ $request->start_date }}"
+                                       placeholder="Pilih tanggal mulai..." value="<?php echo e($request->start_date); ?>"
                                        data-input>
                                 <i class="ri-calendar-2-line position-absolute top-50 end-0 translate-middle-y me-2" style="pointer-events: none;"></i>
                             </div>
@@ -34,7 +33,7 @@
                             <label for="end_date" class="form-label">Tanggal Akhir</label>
                             <div class="position-relative">
                                 <input type="text" class="form-control flatpickr" id="end_date" name="end_date" 
-                                       placeholder="Pilih tanggal akhir..." value="{{ $request->end_date }}"
+                                       placeholder="Pilih tanggal akhir..." value="<?php echo e($request->end_date); ?>"
                                        data-input>
                                 <i class="ri-calendar-2-line position-absolute top-50 end-0 translate-middle-y me-2" style="pointer-events: none;"></i>
                             </div>
@@ -43,18 +42,18 @@
                             <label for="tipe_transaksi" class="form-label">Tipe Transaksi</label>
                             <select class="form-select" id="tipe_transaksi" name="tipe_transaksi">
                                 <option value="">Semua Tipe</option>
-                                @foreach ($tipe_transaksi_list as $tipe)
-                                    <option value="{{ $tipe }}" {{ $request->tipe_transaksi == $tipe ? 'selected' : '' }}>{{ $tipe }}</option>
-                                @endforeach
+                                <?php $__currentLoopData = $tipe_transaksi_list; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $tipe): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($tipe); ?>" <?php echo e($request->tipe_transaksi == $tipe ? 'selected' : ''); ?>><?php echo e($tipe); ?></option>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
                         </div>
                         <div class="col-md-3">
                             <label for="obat_id" class="form-label">Filter Obat</label>
                             <select class="form-select" id="obat_id" name="obat_id">
                                 <option value="">Semua Obat</option>
-                                @foreach ($obats as $obat)
-                                    <option value="{{ $obat->id }}" {{ $request->obat_id == $obat->id ? 'selected' : '' }}>[{{ $obat->kode_obat }}] {{ $obat->nama_obat }}</option>
-                                @endforeach
+                                <?php $__currentLoopData = $obats; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $obat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($obat->id); ?>" <?php echo e($request->obat_id == $obat->id ? 'selected' : ''); ?>>[<?php echo e($obat->kode_obat); ?>] <?php echo e($obat->nama_obat); ?></option>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
                         </div>
                         <div class="col-md-1 d-flex align-items-end">
@@ -69,8 +68,8 @@
             <div class="card-header">
                 <div class="d-flex justify-content-between align-items-center">
                     <h4 class="card-title mb-0">Daftar Mutasi</h4>
-                    <a href="{{ route('transaksi.masuk.create') }}" class="btn btn-success"><i class="ri-add-line align-bottom me-1"></i> Transaksi Masuk</a>
-                    <!-- <a href="{{ route('transaksi.keluar.create') }}" class="btn btn-danger btn-sm"><i class="ri-subtract-line align-bottom me-1"></i> Transaksi Keluar</a> -->
+                    <a href="<?php echo e(route('transaksi.masuk.create')); ?>" class="btn btn-success"><i class="ri-add-line align-bottom me-1"></i> Transaksi Masuk</a>
+                    <!-- <a href="<?php echo e(route('transaksi.keluar.create')); ?>" class="btn btn-danger btn-sm"><i class="ri-subtract-line align-bottom me-1"></i> Transaksi Keluar</a> -->
                 </div>
             </div>
             <div class="card-body">
@@ -91,8 +90,8 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($mutasi as $item)
-                                @php
+                            <?php $__currentLoopData = $mutasi; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <?php
                                     $class = '';
                                     if ($item->tipe_transaksi == 'MASUK') {
                                         $class = 'text-success';
@@ -103,44 +102,46 @@
                                     } elseif ($item->tipe_transaksi == 'PENYESUAIAN' && $item->jumlah_unit < 0) {
                                         $class = 'text-warning';
                                     }
-                                @endphp
+                                ?>
                                 <tr>
-                                    <td>{{ $mutasi->firstItem() + $loop->index }}</td>
-                                    <td>{{ $item->tanggal_transaksi->translatedFormat('d M Y H:i:s') }}</td>
+                                    <td><?php echo e($mutasi->firstItem() + $loop->index); ?></td>
+                                    <td><?php echo e($item->tanggal_transaksi->translatedFormat('d M Y H:i:s')); ?></td>
                                     <td>
-                                        <span class="fw-medium">{{ $item->batch->obat->nama_obat ?? 'N/A' }}</span>
-                                        <br><small>{{ $item->batch->obat->kode_obat ?? '' }}</small>
+                                        <span class="fw-medium"><?php echo e($item->batch->obat->nama_obat ?? 'N/A'); ?></span>
+                                        <br><small><?php echo e($item->batch->obat->kode_obat ?? ''); ?></small>
                                     </td>
-                                    <td>{{ $item->batch->nomor_batch ?? 'N/A' }}</td>
+                                    <td><?php echo e($item->batch->nomor_batch ?? 'N/A'); ?></td>
                                     <td>
-                                        <span class="badge {{ $class }}">{{ $item->tipe_transaksi }}</span>
+                                        <span class="badge <?php echo e($class); ?>"><?php echo e($item->tipe_transaksi); ?></span>
                                     </td>
-                                    <td class="text-end fw-bold {{ $class }}">{{ number_format($item->jumlah_unit, 0) }}</td>
-                                    <td class="text-end">{{ number_format($item->harga_pokok_unit, 2) }}</td>
-                                    <td class="text-end fw-bold {{ $class }}">{{ number_format(abs($item->total_hpp), 2) }}</td>
-                                    <td class="text-end">{{ $item->harga_jual_unit ? number_format($item->harga_jual_unit, 2) : '-' }}</td>
+                                    <td class="text-end fw-bold <?php echo e($class); ?>"><?php echo e(number_format($item->jumlah_unit, 0)); ?></td>
+                                    <td class="text-end"><?php echo e(number_format($item->harga_pokok_unit, 2)); ?></td>
+                                    <td class="text-end fw-bold <?php echo e($class); ?>"><?php echo e(number_format(abs($item->total_hpp), 2)); ?></td>
+                                    <td class="text-end"><?php echo e($item->harga_jual_unit ? number_format($item->harga_jual_unit, 2) : '-'); ?></td>
                                     <td>
-                                        {{ $item->referensi }}
-                                        <br><small>{{ $item->keterangan }}</small>
+                                        <?php echo e($item->referensi); ?>
+
+                                        <br><small><?php echo e($item->keterangan); ?></small>
                                     </td>
                                 </tr>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </tbody>
                     </table>
                 </div>
                 <div class="mt-3">
-                    {{ $mutasi->onEachSide(1)->links() }}
+                    <?php echo e($mutasi->onEachSide(1)->links()); ?>
+
                 </div>
             </div>
         </div>
     </div>
 </div>
-@endsection
-@section('script')
+<?php $__env->stopSection(); ?>
+<?php $__env->startSection('script'); ?>
     <!-- Flatpickr js -->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
-    <script src="{{ URL::asset('build/js/app.js') }}"></script>
+    <script src="<?php echo e(URL::asset('build/js/app.js')); ?>"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Konfigurasi dasar flatpickr
@@ -185,4 +186,5 @@
             }
         });
     </script>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.master', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH /Users/toni/Apps/laravel/perpetual-report-system/resources/views/transaksi/mutasi/index.blade.php ENDPATH**/ ?>

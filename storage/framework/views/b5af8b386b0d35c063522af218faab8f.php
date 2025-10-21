@@ -1,19 +1,17 @@
+<?php $__env->startSection('title'); ?> Transaksi Masuk <?php $__env->stopSection(); ?>
 
-@extends('layouts.master')
-@section('title') Transaksi Masuk @endsection
+<?php $__env->startSection('css'); ?>
 
-@section('css')
-{{-- Select2 --}}
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-{{-- Flatpickr --}}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-@endsection
 
-@section('content')
-@component('components.breadcrumb')
-    @slot('li_1') Transaksi @endslot
-    @slot('title') Transaksi Masuk (Pembelian) @endslot
-@endcomponent
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('content'); ?>
+<?php $__env->startComponent('components.breadcrumb'); ?>
+    <?php $__env->slot('li_1'); ?> Transaksi <?php $__env->endSlot(); ?>
+    <?php $__env->slot('title'); ?> Transaksi Masuk (Pembelian) <?php $__env->endSlot(); ?>
+<?php echo $__env->renderComponent(); ?>
 
 <div class="row">
     <div class="col-lg-12">
@@ -21,32 +19,32 @@
             <div class="card-header">
                 <h4 class="card-title mb-0">Input Data Penerimaan Obat</h4>
             </div><div class="card-body">
-                @if (session('success'))
-                    <div class="alert alert-success">{{ session('success') }}</div>
-                @endif
-                @if (session('error'))
-                    <div class="alert alert-danger">{{ session('error') }}</div>
-                @endif
-                @if ($errors->any())
+                <?php if(session('success')): ?>
+                    <div class="alert alert-success"><?php echo e(session('success')); ?></div>
+                <?php endif; ?>
+                <?php if(session('error')): ?>
+                    <div class="alert alert-danger"><?php echo e(session('error')); ?></div>
+                <?php endif; ?>
+                <?php if($errors->any()): ?>
                     <div class="alert alert-danger">
                         <ul>
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
+                            <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <li><?php echo e($error); ?></li>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </ul>
                     </div>
-                @endif
+                <?php endif; ?>
                 
-                <form action="{{ route('transaksi.masuk.store') }}" method="POST">
-                    @csrf
+                <form action="<?php echo e(route('transaksi.masuk.store')); ?>" method="POST">
+                    <?php echo csrf_field(); ?>
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="tanggal_masuk" class="form-label">Tanggal Masuk</label>
-                            <input type="date" class="form-control" id="tanggal_masuk" name="tanggal_masuk" value="{{ old('tanggal_masuk', date('Y-m-d')) }}" required>
+                            <input type="date" class="form-control" id="tanggal_masuk" name="tanggal_masuk" value="<?php echo e(old('tanggal_masuk', date('Y-m-d'))); ?>" required>
                         </div>
                         <div class="col-md-6">
                             <label for="referensi" class="form-label">Nomor Referensi (Faktur/DO)</label>
-                            <input type="text" class="form-control" id="referensi" name="referensi" value="{{ old('referensi') }}" required>
+                            <input type="text" class="form-control" id="referensi" name="referensi" value="<?php echo e(old('referensi')); ?>" required>
                         </div>
                     </div>
 
@@ -106,8 +104,8 @@
         </div>
     </div>
 </div>
-@endsection
-@section('script')
+<?php $__env->stopSection(); ?>
+<?php $__env->startSection('script'); ?>
 <!--jquery cdn-->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <!--select2 cdn-->
@@ -116,7 +114,7 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <!--flatpickr bahasa indonesia-->
     <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
-<script src="{{ URL::asset('build/js/app.js') }}"></script>
+<script src="<?php echo e(URL::asset('build/js/app.js')); ?>"></script>
 <script>
     $(document).ready(function() {
         const container = $('#obat-container');
@@ -159,7 +157,7 @@
                 width: '100%',
                 minimumInputLength: 2,
                 ajax: {
-                    url: "{{ route('select2.obat.search') }}",
+                    url: "<?php echo e(route('select2.obat.search')); ?>",
                     dataType: 'json',
                     delay: 250,
                     data: function(params) {
@@ -292,4 +290,5 @@
     });
 </script>
 
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.master', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH /Users/toni/Apps/laravel/perpetual-report-system/resources/views/transaksi/masuk/create.blade.php ENDPATH**/ ?>

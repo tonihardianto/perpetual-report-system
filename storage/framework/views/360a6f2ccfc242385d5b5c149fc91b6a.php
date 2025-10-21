@@ -1,26 +1,25 @@
-@extends('layouts.master')
-@section('title') Stock Opname Per Obat @endsection
-@section('content')
-@component('components.breadcrumb')
-    @slot('li_1') Transaksi @endslot
-    @slot('title') Stock Opname (SO) Per Obat @endslot
-@endcomponent
+<?php $__env->startSection('title'); ?> Stock Opname Per Obat <?php $__env->stopSection(); ?>
+<?php $__env->startSection('content'); ?>
+<?php $__env->startComponent('components.breadcrumb'); ?>
+    <?php $__env->slot('li_1'); ?> Transaksi <?php $__env->endSlot(); ?>
+    <?php $__env->slot('title'); ?> Stock Opname (SO) Per Obat <?php $__env->endSlot(); ?>
+<?php echo $__env->renderComponent(); ?>
 
 <div class="row">
     <div class="col-lg-12">
-        {{-- ... (sama seperti sebelumnya, untuk menampilkan info) --}}
+        
 
         <div class="card">
             <div class="card-body">
-                @if (session('success'))
-                    <div class="alert alert-success">{{ session('success') }}</div>
-                @endif
-                @if (session('error'))
-                    <div class="alert alert-danger">{{ session('error') }}</div>
-                @endif
+                <?php if(session('success')): ?>
+                    <div class="alert alert-success"><?php echo e(session('success')); ?></div>
+                <?php endif; ?>
+                <?php if(session('error')): ?>
+                    <div class="alert alert-danger"><?php echo e(session('error')); ?></div>
+                <?php endif; ?>
                 
-                <form method="POST" action="{{ route('transaksi.stock-opname.process') }}">
-                    @csrf
+                <form method="POST" action="<?php echo e(route('transaksi.stock-opname.process')); ?>">
+                    <?php echo csrf_field(); ?>
                     
                     <div class="table-responsive">
                         <table class="table align-middle table-nowrap mb-0 table-striped">
@@ -35,45 +34,46 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($obats as $index => $obat)
+                                <?php $__currentLoopData = $obats; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $obat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <tr>
-                                        <td>{{ $obat->kode_obat }}</td>
-                                        <td><span class="fw-medium">{{ $obat->nama_obat }}</span></td>
+                                        <td><?php echo e($obat->kode_obat); ?></td>
+                                        <td><span class="fw-medium"><?php echo e($obat->nama_obat); ?></span></td>
                                         
-                                        {{-- Total Stok Sistem --}}
-                                        <td class="text-end fw-bold text-primary">{{ number_format($obat->total_sisa_stok, 0) }}
-                                            <input type="hidden" name="opname_data[{{ $index }}][obat_id]" value="{{ $obat->id }}">
-                                            <input type="hidden" name="opname_data[{{ $index }}][stok_tercatat_sistem]" value="{{ $obat->total_sisa_stok }}">
+                                        
+                                        <td class="text-end fw-bold text-primary"><?php echo e(number_format($obat->total_sisa_stok, 0)); ?>
+
+                                            <input type="hidden" name="opname_data[<?php echo e($index); ?>][obat_id]" value="<?php echo e($obat->id); ?>">
+                                            <input type="hidden" name="opname_data[<?php echo e($index); ?>][stok_tercatat_sistem]" value="<?php echo e($obat->total_sisa_stok); ?>">
                                         </td>
                                         
-                                        {{-- Input Stok Fisik --}}
+                                        
                                         <td>
                                             <input type="number" 
-                                                   name="opname_data[{{ $index }}][stok_fisik]" 
+                                                   name="opname_data[<?php echo e($index); ?>][stok_fisik]" 
                                                    class="form-control form-control-sm text-center is-invalid" 
-                                                   value="{{ old('opname_data.'.$index.'.stok_fisik', $obat->total_sisa_stok) }}" 
+                                                   value="<?php echo e(old('opname_data.'.$index.'.stok_fisik', $obat->total_sisa_stok)); ?>" 
                                                    min="0"
-                                                   data-stok-sistem="{{ $obat->total_sisa_stok }}"
-                                                   oninput="calculateSelisih(this, {{ $obat->total_sisa_stok }}, 'selisih-{{ $index }}')"
+                                                   data-stok-sistem="<?php echo e($obat->total_sisa_stok); ?>"
+                                                   oninput="calculateSelisih(this, <?php echo e($obat->total_sisa_stok); ?>, 'selisih-<?php echo e($index); ?>')"
                                                    required>
                                             <span class="invalid-feedback">
                                                 <!-- Invalid value! -->
                                             </span>
                                         </td>
                                         
-                                        {{-- Selisih --}}
-                                        <td id="selisih-{{ $index }}" class="text-end fw-bold">0</td>
                                         
-                                        {{-- Catatan --}}
+                                        <td id="selisih-<?php echo e($index); ?>" class="text-end fw-bold">0</td>
+                                        
+                                        
                                         <td>
                                             <input type="text" 
-                                                   name="opname_data[{{ $index }}][catatan]" 
+                                                   name="opname_data[<?php echo e($index); ?>][catatan]" 
                                                    class="form-control form-control-sm" 
                                                    placeholder="Keterangan selisih"
-                                                   value="{{ old('opname_data.'.$index.'.catatan') }}">
+                                                   value="<?php echo e(old('opname_data.'.$index.'.catatan')); ?>">
                                         </td>
                                     </tr>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </tbody>
                         </table>
                     </div>
@@ -87,7 +87,7 @@
     </div>
 </div>
 
-<script src="{{ URL::asset('build/js/app.js') }}"></script>
+<script src="<?php echo e(URL::asset('build/js/app.js')); ?>"></script>
 <script>
     function validateAllInputs() {
     const submitButton = document.getElementById('btn-submit');
@@ -138,4 +138,5 @@ function calculateSelisih(inputElement, stokSistem, selisihId) {
         validateAllInputs();
     });
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.master', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH /Users/toni/Apps/laravel/perpetual-report-system/resources/views/transaksi/stock-opname/index.blade.php ENDPATH**/ ?>

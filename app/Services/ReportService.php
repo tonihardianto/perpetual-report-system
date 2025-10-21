@@ -13,10 +13,27 @@ class ReportService
     /**
      * Menghasilkan data laporan perpetual tahunan (format horizontal).
      */
-    public function generatePerpetualReport(int $year): array
+    public function generatePerpetualReport(int $year, array $obatIds = []): array
     {
         // Eager load 'transaksiMutasi' dan 'obat'
-        $batches = BatchObat::with(['obat', 'transaksiMutasi'])->get(); 
+        $query = BatchObat::with(['obat', 'transaksiMutasi']);
+        
+        // Filter by obat_ids if provided
+        if (!empty($obatIds)) {
+            $query->whereHas('obat', function($q) use ($obatIds) {
+                $q->whereIn('id', $obatIds);
+            });
+        }
+        
+        // Gunakan withAggregate untuk mengurutkan berdasarkan nama obat
+        $batches = $query->select('batch_obat.*')
+            ->with(['obat' => function($query) {
+                $query->orderBy('nama_obat');
+            }])
+            ->join('obat', 'batch_obat.obat_id', '=', 'obat.id')
+            ->orderBy('obat.nama_obat')
+            ->orderBy('batch_obat.tanggal_ed')
+            ->get();
         
         $reportData = [];
         $bulanNama = [
@@ -36,7 +53,7 @@ class ReportService
 
             $currentData = [
                 'obat_nama' => $obatNama, 
-                'batch_no' => $batch->no_batch,
+                'batch_no' => $batch->nomor_batch,
                 'ed' => $batch->tanggal_ed->format('Y-m-d'),
                 'hpp_unit' => $batch->harga_beli_per_satuan,
                 'saldo_awal_qty' => 0,
@@ -130,6 +147,16 @@ class ReportService
             }
 
             $reportData[] = $currentData;
+        }
+
+        // Urutkan array hasil berdasarkan nama obat (jika ada data)
+        if (!empty($reportData)) {
+            usort($reportData, function($a, $b) {
+                // Pastikan kedua nilai ada sebelum membandingkan
+                $namaA = $a['obat_nama'] ?? '';
+                $namaB = $b['obat_nama'] ?? '';
+                return strcasecmp($namaA, $namaB);
+            });
         }
 
         return $reportData;

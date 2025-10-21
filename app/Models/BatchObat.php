@@ -16,28 +16,19 @@ class BatchObat extends Model
         'tanggal_ed' => 'date',
     ];
 
-    // public function obat()
-    // {
-    //     return $this->belongsTo(Obat::class);
-    // }
-
-    public function mutasi()
+    /**
+     * Relasi ke model Obat
+     */
+    public function obat()
     {
-        return $this->hasMany(TransaksiMutasi::class);
+        return $this->belongsTo(Obat::class, 'obat_id');
     }
-    // app/Models/BatchObat.php
 
-// ...
-
-public function obat()
-{
-    // Relasi One-to-One/Many ke model Obat
-    return $this->belongsTo(\App\Models\Obat::class, 'obat_id');
-}
-
-public function transaksiMutasi()
-{
-    // Relasi One-to-Many ke model TransaksiMutasi
-    return $this->hasMany(\App\Models\TransaksiMutasi::class, 'batch_id');
-}
+    /**
+     * Relasi ke model TransaksiMutasi
+     */
+    public function transaksiMutasi()
+    {
+        return $this->hasMany(TransaksiMutasi::class, 'batch_id');
+    }
 }

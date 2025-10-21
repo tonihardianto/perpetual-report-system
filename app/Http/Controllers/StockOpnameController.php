@@ -42,12 +42,24 @@ class StockOpnameController extends Controller
             'opname_data.*.catatan' => 'nullable|string',
         ]);
 
+        // Validasi stok fisik tidak boleh melebihi stok tercatat
+        foreach ($data['opname_data'] as $index => $item) {
+            if ($item['stok_fisik'] > $item['stok_tercatat_sistem']) {
+                $obat = Obat::find($item['obat_id']);
+                return redirect()
+                    ->back()
+                    ->withInput()
+                    ->with('error', "Stock Opname gagal: Stok fisik ({$item['stok_fisik']}) untuk obat {$obat->nama_obat} tidak boleh melebihi stok tercatat sistem ({$item['stok_tercatat_sistem']})");
+            }
+        }
+
         $transactionsCount = 0;
-        
+        $testDate = Carbon::create(2025, 1, 31); // Tanggal yang Anda inginkan
+        $closingDate = $testDate->endOfMonth()->endOfDay();
         // --- PERBAIKAN LOGIKA TANGGAL KRUSIAL ---
         // Memaksa transaksi penutupan (Fase 1, 2, 3) terjadi di akhir bulan saat ini
-        $closingDate = now()->endOfMonth()->endOfDay(); // Contoh: 31 Okt 2025 23:59:59
-        
+        // $closingDate = now()->endOfMonth()->endOfDay(); // Contoh: 31 Okt 2025 23:59:59
+        // $closingDate = Carbon::create(2025, 9, 29, 23, 59, 59); // Hardcoded: 31 Okt 2025 23:59:59
         // Memaksa transaksi pembukaan (Fase 4) terjadi di awal bulan berikutnya
         $openingDate = $closingDate->copy()->addDay()->startOfDay(); // Contoh: 01 Nov 2025 00:00:00
 
