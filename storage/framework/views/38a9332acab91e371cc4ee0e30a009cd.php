@@ -1,8 +1,8 @@
-@extends('layouts.master-without-nav')
-@section('title')
-    @lang('translation.password-reset')
-@endsection
-@section('content')
+
+<?php $__env->startSection('title'); ?>
+    <?php echo app('translator')->get('translation.password-reset'); ?>
+<?php $__env->stopSection(); ?>
+<?php $__env->startSection('content'); ?>
     <div class="auth-page-wrapper pt-5">
         <!-- auth page bg -->
         <div class="auth-one-bg-position auth-one-bg" id="auth-particles">
@@ -24,7 +24,7 @@
                         <div class="text-center mt-sm-5 mb-4 text-white-50">
                             <div>
                                 <a href="/index" class="d-inline-block auth-logo">
-                                    <img src="{{ URL::asset('light-logo.png') }}" alt=""
+                                    <img src="<?php echo e(URL::asset('light-logo.png')); ?>" alt=""
                                         height="20">
                                 </a>
                             </div>
@@ -53,23 +53,38 @@
                                     Enter your email and instructions will be sent to you!
                                 </div>
                                 <div class="p-2">
-                                    @if (session('status'))
+                                    <?php if(session('status')): ?>
                                         <div class="alert alert-success text-center mb-4" role="alert">
-                                            {{ session('status') }}
+                                            <?php echo e(session('status')); ?>
+
                                         </div>
-                                    @endif
-                                    <form class="form-horizontal" method="POST" action="{{ route('password.email') }}">
-                                        @csrf
+                                    <?php endif; ?>
+                                    <form class="form-horizontal" method="POST" action="<?php echo e(route('password.email')); ?>">
+                                        <?php echo csrf_field(); ?>
                                         <div class="mb-3">
                                             <label for="useremail" class="form-label">Email</label>
-                                            <input type="email" class="form-control @error('email') is-invalid @enderror"
+                                            <input type="email" class="form-control <?php $__errorArgs = ['email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                                 id="useremail" name="email" placeholder="Enter email"
-                                                value="{{ old('email') }}" id="email">
-                                            @error('email')
+                                                value="<?php echo e(old('email')); ?>" id="email">
+                                            <?php $__errorArgs = ['email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
                                                 <span class="invalid-feedback" role="alert">
-                                                    <strong>{{ $message }}</strong>
+                                                    <strong><?php echo e($message); ?></strong>
                                                 </span>
-                                            @enderror
+                                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                         </div>
 
                                         <div class="text-end">
@@ -85,7 +100,7 @@
                         <!-- end card -->
 
                         <div class="mt-4 text-center">
-                            <p class="mb-0">Wait, I remember my password... <a href="{{ route('login') }}"
+                            <p class="mb-0">Wait, I remember my password... <a href="<?php echo e(route('login')); ?>"
                                     class="fw-semibold text-primary text-decoration-underline"> Click here </a> </p>
                         </div>
 
@@ -115,7 +130,9 @@
         <!-- end Footer -->
     </div>
     <!-- end auth-page-wrapper -->
-@endsection
-@section('script')
-    <script src="{{ URL::asset('build/js/pages/eva-icon.init.js') }}"></script>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php $__env->startSection('script'); ?>
+    <script src="<?php echo e(URL::asset('build/js/pages/eva-icon.init.js')); ?>"></script>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.master-without-nav', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH /Users/toni/Apps/laravel/perpetual-report-system/resources/views/auth/passwords/email.blade.php ENDPATH**/ ?>

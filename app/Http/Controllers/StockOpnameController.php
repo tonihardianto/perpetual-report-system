@@ -54,7 +54,7 @@ class StockOpnameController extends Controller
         }
 
         $transactionsCount = 0;
-        $testDate = Carbon::create(2025, 1, 31); // Tanggal yang Anda inginkan
+        $testDate = Carbon::create(2025, 3, 31); // Tanggal yang Anda inginkan
         $closingDate = $testDate->endOfMonth()->endOfDay();
         // --- PERBAIKAN LOGIKA TANGGAL KRUSIAL ---
         // Memaksa transaksi penutupan (Fase 1, 2, 3) terjadi di akhir bulan saat ini

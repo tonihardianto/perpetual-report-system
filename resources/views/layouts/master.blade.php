@@ -1,12 +1,12 @@
 <!doctype html >
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-bs-theme="dark" data-layout="horizontal" data-topbar="dark" data-sidebar="dark" data-sidebar-size="lg" data-sidebar-image="none" data-preloader="disable">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-bs-theme="light" data-layout="horizontal" data-topbar="dark" data-sidebar="dark" data-sidebar-size="lg" data-sidebar-image="none" data-preloader="disable">
 
 <head>
     <meta charset="utf-8" />
-    <title>@yield('title') | Velzon - Admin & Dashboard Template</title>
+    <title>@yield('title') | SIPOTEK</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
-    <meta content="Themesbrand" name="author" />
+    <meta content="Sistem Informasi Stock Opname" name="description" />
+    <meta content="Toni Hardianto" name="author" />
     <!-- App favicon -->
     <link rel="shortcut icon" href="{{ URL::asset('icon.png')}}">
     @include('layouts.head-css')

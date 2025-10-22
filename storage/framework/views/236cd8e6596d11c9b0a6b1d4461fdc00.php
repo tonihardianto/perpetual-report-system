@@ -56,7 +56,7 @@
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
                         </div>
-                        <div class="col-md-8">
+                        <div class="col-md-7">
                             <label for="obat_id" class="form-label">Filter Multiple Obat (Opsional)</label>
                             <select class="js-example-basic-multiple" id="obat_id" name="obat_id[]" multiple="multiple">
                                 <option value="">Semua Obat</option>
@@ -67,7 +67,7 @@
                                 <?php endif; ?>
                             </select>
                         </div>
-                        <div class="col-md-2 d-flex align-items-end gap-2">
+                        <div class="col-md-3 d-flex align-items-end gap-2">
                             <button type="submit" class="btn btn-primary w-100">Tampilkan</button>
                             <button type="button" class="btn btn-warning w-100" onclick="window.location='<?php echo e(route('laporan.perpetual.index')); ?>'">
                                 <i class="ri-refresh-line align-bottom me-1"></i> Refresh
@@ -223,7 +223,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-     <script src="<?php echo e(URL::asset('js/pages/select2.init.js')); ?>"></script>
+     <!-- <script src="<?php echo e(URL::asset('js/pages/select2.init.js')); ?>"></script> -->
     <!--flatpickr cdn-->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="<?php echo e(URL::asset('build/js/app.js')); ?>"></script>
@@ -231,7 +231,6 @@
         $(document).ready(function() {
         // Initialize Select2 with AJAX and multiple selection
         $('#obat_id').select2({
-            // placeholder: "Pilih beberapa obat...",?
             allowClear: true,
             ajax: {
                 url: '/api/obat',
@@ -241,7 +240,7 @@
                     return {
                         search: params.term,
                         page: params.page || 1,
-                        selected: $('#obat_id').val() // kirim ID yang sudah dipilih
+                        selected: $('#obat_id').val() 
                     };
                 },
                 processResults: function(data, params) {
