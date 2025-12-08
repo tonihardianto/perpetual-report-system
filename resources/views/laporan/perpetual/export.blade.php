@@ -11,6 +11,7 @@
             <th rowspan="3" style="background:#ddebf7; border:1px solid #000;">Nama Obat</th>
             <th rowspan="3" style="background:#ddebf7; border:1px solid #000;">No. Batch</th>
             <th rowspan="3" style="background:#ddebf7; border:1px solid #000;">Tgl ED</th>
+            <th rowspan="3" style="background:#ddebf7; border:1px solid #000;">Tgl Masuk</th>
             <th rowspan="3" style="background:#ddebf7; border:1px solid #000;">HPP Satuan</th>
             <th colspan="2" style="background:#b4c7e7; border:1px solid #000;">Saldo Awal {{ $tahun }}</th>
 
@@ -29,7 +30,7 @@
             @for ($m = 1; $m <= 12; $m++)
                 <th colspan="2" style="background:#c6efce; border:1px solid #000;">Masuk (Beli)</th>
                 <th colspan="2" style="background:#fce4d6; border:1px solid #000;">Keluar (Pakai)</th>
-                <th colspan="2" style="background:#fff2cc; border:1px solid #000;">Stock Opname</th>
+                <th colspan="2" style="background:#fff2cc; border:1px solid #000;">Sisa Stok</th>
             @endfor
         </tr>
 
@@ -53,7 +54,8 @@
             <tr>
                 <td style="border:1px solid #000;">{{ $data['obat_nama'] }}</td>
                 <td style="border:1px solid #000;">{{ $data['batch_no'] }}</td>
-                <td style="border:1px solid #000;">{{ $data['ed'] }}</td>
+                <td style="border:1px solid #000;">{{ \Carbon\Carbon::parse($data['ed'])->format('d-m-Y') }}</td>
+                <td style="border:1px solid #000;">{{ \Carbon\Carbon::parse($data['tanggal_masuk'])->format('d-m-Y') }}</td>
                 <td style="border:1px solid #000;" class="text-end">{{ number_format($data['hpp_unit'], 2) }}</td>
 
                 {{-- Saldo Awal --}}
@@ -75,7 +77,7 @@
                         <td style="border:1px solid #000;" class="text-end">{{ number_format($mutasi['keluar_qty'], 0) }}</td>
                         <td style="border:1px solid #000;" class="text-end">{{ number_format($mutasi['keluar_value'], 2) }}</td>
 
-                        {{-- Penyesuaian --}}
+                        {{-- Sisa Stok --}}
                         <td style="border:1px solid #000;" class="text-end">{{ number_format($mutasi['penyesuaian_qty'], 0) }}</td>
                         <td style="border:1px solid #000;" class="text-end">{{ number_format($mutasi['penyesuaian_value'], 2) }}</td>
                     @else

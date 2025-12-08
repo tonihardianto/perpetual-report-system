@@ -46,7 +46,7 @@
                         </div>
                         <div class="col-md-6">
                             <label for="referensi" class="form-label">Nomor Referensi (Faktur/DO)</label>
-                            <input type="text" class="form-control" id="referensi" name="referensi" value="{{ old('referensi') }}" required>
+                            <input type="text" class="form-control" id="referensi" name="referensi" value="{{ old('referensi') ?? '-' }}" required>
                         </div>
                     </div>
 

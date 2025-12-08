@@ -31,4 +31,12 @@ class BatchObat extends Model
     {
         return $this->hasMany(TransaksiMutasi::class, 'batch_id');
     }
+
+    /**
+     * Relasi ke model StockOpname.
+     */
+    public function stockOpnames()
+    {
+        return $this->hasMany(StockOpname::class, 'batch_id');
+    }
 }

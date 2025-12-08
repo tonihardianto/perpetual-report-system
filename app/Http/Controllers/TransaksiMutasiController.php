@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class TransaksiMutasiController extends Controller
 {
     /**
-     * Menampilkan daftar semua Transaksi Mutasi (Masuk, Keluar, Penyesuaian).
+     * Menampilkan daftar semua Transaksi Mutasi (Masuk, Keluar, Sisa Stok).
      */
     public function index(Request $request)
     {

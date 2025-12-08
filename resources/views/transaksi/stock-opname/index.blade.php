@@ -1,141 +1,79 @@
 @extends('layouts.master')
-@section('title') Stock Opname Per Obat @endsection
+@section('title') Riwayat Input Sisa Stock @endsection
 @section('content')
 @component('components.breadcrumb')
     @slot('li_1') Transaksi @endslot
-    @slot('title') Stock Opname (SO) Per Obat @endslot
+    @slot('title') Riwayat Input Sisa Stock (SO) @endslot
 @endcomponent
 
 <div class="row">
     <div class="col-lg-12">
-        {{-- ... (sama seperti sebelumnya, untuk menampilkan info) --}}
-
         <div class="card">
             <div class="card-body">
+                <div class="d-flex align-items-center mb-4">
+                    <h4 class="card-title flex-grow-1">Daftar Periode Input Sisa Stock</h4>
+                    <div class="flex-shrink-0">
+                        <a href="{{ route('transaksi.stock-opname.create') }}" class="btn btn-success"><i class="ri-add-line align-bottom me-1"></i> Lakukan SO Baru</a>
+                    </div>
+                </div>
+                
                 @if (session('success'))
                     <div class="alert alert-success">{{ session('success') }}</div>
                 @endif
-                @if (session('error'))
-                    <div class="alert alert-danger">{{ session('error') }}</div>
-                @endif
-                
-                <form method="POST" action="{{ route('transaksi.stock-opname.process') }}">
-                    @csrf
-                    
-                    <div class="table-responsive">
-                        <table class="table align-middle table-nowrap mb-0 table-striped">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Kode Obat</th>
-                                    <th>Nama Obat</th>
-                                    <th class="text-end">Stok Tercatat (Sistem)</th>
-                                    <th class="text-center">Stok Fisik (Input)</th>
-                                    <th class="text-end">Selisih Total</th>
-                                    <th>Catatan</th>
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Periode SO</th>
+                                <th>Status</th>
+                                <th>Tanggal Proses</th>
+                                <th class="text-end">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($riwayatSO as $header)
+                                <tr class="clickable-row" data-href="{{ route('transaksi.stock-opname.show', $header->id) }}" style="cursor: pointer;">
+                                    <td><span class="fw-medium">{{ \Carbon\Carbon::create($header->tahun, $header->bulan)->translatedFormat('F Y') }}</span></td>
+                                    <td>
+                                        @if($header->dynamic_status == 'Selesai Penuh')
+                                            <span class="badge bg-success">{{ $header->dynamic_status }}</span>
+                                        @else
+                                            <span class="badge bg-warning text-dark">{{ $header->dynamic_status }}</span>
+                                        @endif
+                                    </td>
+                                    <td>{{ $header->tanggal_so_dilakukan ? $header->tanggal_so_dilakukan->format('d M Y, H:i') : '-' }}</td>
+                                    <td class="text-end">
+                                        <a href="{{ route('transaksi.stock-opname.show', $header->id) }}" class="btn btn-sm btn-outline-primary">Lihat Detail</a>
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($obats as $index => $obat)
-                                    <tr>
-                                        <td>{{ $obat->kode_obat }}</td>
-                                        <td><span class="fw-medium">{{ $obat->nama_obat }}</span></td>
-                                        
-                                        {{-- Total Stok Sistem --}}
-                                        <td class="text-end fw-bold text-primary">{{ number_format($obat->total_sisa_stok, 0) }}
-                                            <input type="hidden" name="opname_data[{{ $index }}][obat_id]" value="{{ $obat->id }}">
-                                            <input type="hidden" name="opname_data[{{ $index }}][stok_tercatat_sistem]" value="{{ $obat->total_sisa_stok }}">
-                                        </td>
-                                        
-                                        {{-- Input Stok Fisik --}}
-                                        <td>
-                                            <input type="number" 
-                                                   name="opname_data[{{ $index }}][stok_fisik]" 
-                                                   class="form-control form-control-sm text-center is-invalid" 
-                                                   value="{{ old('opname_data.'.$index.'.stok_fisik', $obat->total_sisa_stok) }}" 
-                                                   min="0"
-                                                   data-stok-sistem="{{ $obat->total_sisa_stok }}"
-                                                   oninput="calculateSelisih(this, {{ $obat->total_sisa_stok }}, 'selisih-{{ $index }}')"
-                                                   required>
-                                            <span class="invalid-feedback">
-                                                <!-- Invalid value! -->
-                                            </span>
-                                        </td>
-                                        
-                                        {{-- Selisih --}}
-                                        <td id="selisih-{{ $index }}" class="text-end fw-bold">0</td>
-                                        
-                                        {{-- Catatan --}}
-                                        <td>
-                                            <input type="text" 
-                                                   name="opname_data[{{ $index }}][catatan]" 
-                                                   class="form-control form-control-sm" 
-                                                   placeholder="Keterangan selisih"
-                                                   value="{{ old('opname_data.'.$index.'.catatan') }}">
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <div class="mt-4">
-                        <button type="submit" id="btn-submit" class="btn btn-success float-end"><i class="ri-check-line align-bottom me-1"></i> Proses Stock Opname Per Obat</button>
-                    </div>
-                </form>
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="text-center">Belum ada riwayat Input Sisa Stock.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-3">
+                    {{ $riwayatSO->links() }}
+                </div>
             </div>
         </div>
     </div>
 </div>
+@endsection
 
+@section('script')
 <script src="{{ URL::asset('build/js/app.js') }}"></script>
 <script>
-    function validateAllInputs() {
-    const submitButton = document.getElementById('btn-submit');
-    let hasInvalidInput = false;
-    
-    document.querySelectorAll('input[type="number"]').forEach(input => {
-        const stokFisik = parseInt(input.value) || 0;
-        const stokSistem = parseInt(input.getAttribute('data-stok-sistem'));
-        
-        if (stokFisik > stokSistem) {
-            hasInvalidInput = true;
-            input.classList.add('is-invalid');
-        } else {
-            input.classList.remove('is-invalid');
-        }
-    });
-    
-    submitButton.disabled = hasInvalidInput;
-    return hasInvalidInput;
-}
-
-function calculateSelisih(inputElement, stokSistem, selisihId) {
-    const stokFisik = parseInt(inputElement.value) || 0;
-    const selisih = stokFisik - stokSistem;
-    const selisihElement = document.getElementById(selisihId);
-    
-    // Update selisih display
-    selisihElement.textContent = selisih.toLocaleString('id-ID');
-    selisihElement.classList.remove('text-success', 'text-danger', 'text-warning');
-    
-    if (selisih > 0) {
-        selisihElement.classList.add('text-danger');
-        inputElement.classList.add('is-invalid');
-    } else if (selisih < 0) {
-        selisihElement.classList.add('text-danger');
-        inputElement.classList.remove('is-invalid');
-    } else {
-        selisihElement.classList.add('text-warning');
-        inputElement.classList.remove('is-invalid');
-    }
-    
-    // Validate all inputs and update submit button
-    validateAllInputs();
-    }
-
-    // Jalankan validasi saat halaman dimuat
-    document.addEventListener('DOMContentLoaded', function() {
-        validateAllInputs();
+    document.addEventListener("DOMContentLoaded", function() {
+        const rows = document.querySelectorAll(".clickable-row");
+        rows.forEach(row => {
+            row.addEventListener("click", () => {
+                window.location.href = row.dataset.href;
+            });
+        });
     });
 </script>
 @endsection

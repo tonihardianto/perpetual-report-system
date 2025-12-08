@@ -98,7 +98,7 @@
                                 <?php for($m = 1; $m <= 12; $m++): ?>
                                     <th colspan="2">Masuk (Beli)</th>
                                     <th colspan="2">Keluar (Pakai)</th>
-                                    <th colspan="2">Penyesuaian</th>
+                                    <th colspan="2">Sisa Stok</th>
                                     <th rowspan="2">Saldo Akhir Qty</th>
                                 <?php endfor; ?>
                             </tr>

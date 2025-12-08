@@ -15,8 +15,10 @@ class StockOpname extends Model
     // Lindungi kolom yang tidak boleh diisi secara massal (misalnya 'id')
     protected $guarded = ['id']; 
     
-    // Tentukan kolom tanggal jika Anda menggunakannya di Controller
-    protected $dates = ['tanggal_opname'];
+    /**
+     * The attributes that should be cast.
+     */
+    protected $casts = ['tanggal_opname' => 'date'];
 
     /**
      * Relasi ke Batch Obat.

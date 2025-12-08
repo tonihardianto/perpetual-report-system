@@ -11,6 +11,7 @@
             <th rowspan="3" style="background:#ddebf7; border:1px solid #000;">Nama Obat</th>
             <th rowspan="3" style="background:#ddebf7; border:1px solid #000;">No. Batch</th>
             <th rowspan="3" style="background:#ddebf7; border:1px solid #000;">Tgl ED</th>
+            <th rowspan="3" style="background:#ddebf7; border:1px solid #000;">Tgl Masuk</th>
             <th rowspan="3" style="background:#ddebf7; border:1px solid #000;">HPP Satuan</th>
             <th colspan="2" style="background:#b4c7e7; border:1px solid #000;">Saldo Awal <?php echo e($tahun); ?></th>
 
@@ -30,7 +31,7 @@
             <?php for($m = 1; $m <= 12; $m++): ?>
                 <th colspan="2" style="background:#c6efce; border:1px solid #000;">Masuk (Beli)</th>
                 <th colspan="2" style="background:#fce4d6; border:1px solid #000;">Keluar (Pakai)</th>
-                <th colspan="2" style="background:#fff2cc; border:1px solid #000;">Stock Opname</th>
+                <th colspan="2" style="background:#fff2cc; border:1px solid #000;">Sisa Stok</th>
             <?php endfor; ?>
         </tr>
 
@@ -54,7 +55,8 @@
             <tr>
                 <td style="border:1px solid #000;"><?php echo e($data['obat_nama']); ?></td>
                 <td style="border:1px solid #000;"><?php echo e($data['batch_no']); ?></td>
-                <td style="border:1px solid #000;"><?php echo e($data['ed']); ?></td>
+                <td style="border:1px solid #000;"><?php echo e(\Carbon\Carbon::parse($data['ed'])->format('d-m-Y')); ?></td>
+                <td style="border:1px solid #000;"><?php echo e(\Carbon\Carbon::parse($data['tanggal_masuk'])->format('d-m-Y')); ?></td>
                 <td style="border:1px solid #000;" class="text-end"><?php echo e(number_format($data['hpp_unit'], 2)); ?></td>
 
                 

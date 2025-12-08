@@ -109,7 +109,7 @@ class ResetBatchStok extends Command
      */
     private function createAdjustmentEntry($batch, $jumlahUnit, $referensi)
     {
-        $tipeMutasi = $jumlahUnit > 0 ? 'Penyesuaian Stok (Kelebihan/Masuk)' : 'Penyesuaian Stok (Kekurangan/Keluar)';
+        $tipeMutasi = $jumlahUnit > 0 ? 'Sisa Stok Stok (Kelebihan/Masuk)' : 'Sisa Stok Stok (Kekurangan/Keluar)';
         
         TransaksiMutasi::create([
             'batch_id' => $batch->id,

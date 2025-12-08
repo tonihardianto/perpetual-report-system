@@ -27,7 +27,7 @@
                                     <img src="{{ URL::asset('light-logo.png') }}" alt="" height="20">
                                 </a>
                             </div>
-                            <p class="mt-3 fs-15 fw-medium">Sistem Informasi Stock Opname</p>
+                            <p class="mt-3 fs-15 fw-medium">Sistem Informasi Input Sisa Stock</p>
                         </div>
                     </div>
                 </div>
@@ -112,7 +112,7 @@
                         <div class="text-center">
                             <script>
                                 document.write(new Date().getFullYear())
-                            </script> Sistem Informasi Stock Opname. Crafted with <i
+                            </script> Sistem Informasi Input Sisa Stock. Crafted with <i
                                     class="mdi mdi-heart text-danger"></i> by Toni Hardianto</p>
                         </div>
                     </div>

@@ -30,7 +30,7 @@
             <?php for($m = 1; $m <= 12; $m++): ?>
                 <th colspan="2" style="background:#c6efce; border:1px solid #000;">Masuk (Beli)</th>
                 <th colspan="2" style="background:#fce4d6; border:1px solid #000;">Keluar (Pakai)</th>
-                <th colspan="2" style="background:#fff2cc; border:1px solid #000;">Penyesuaian</th>
+                <th colspan="2" style="background:#fff2cc; border:1px solid #000;">Sisa Stok</th>
             <?php endfor; ?>
         </tr>
 

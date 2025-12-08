@@ -5,10 +5,10 @@
     <meta charset="utf-8" />
     <title>@yield('title') | SIPOTEK</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta content="Sistem Informasi Stock Opname" name="description" />
+    <meta content="Sistem Informasi Input Sisa Stock" name="description" />
     <meta content="Toni Hardianto" name="author" />
     <!-- App favicon -->
-    <link rel="shortcut icon" href="{{ URL::asset('icon.png')}}">
+    <link rel="shortcut icon" href="{{ URL::asset('images/logo.png')}}">
     @include('layouts.head-css')
 </head>
 

@@ -25,6 +25,12 @@ class ReportService
             });
         }
         
+        // Filter batch yang memiliki transaksi di tahun yang dipilih ATAU sebelumnya
+        // (Untuk menghitung saldo awal dan mutasi di tahun tersebut)
+        $query->whereHas('transaksiMutasi', function($q) use ($year) {
+            $q->whereYear('tanggal_transaksi', '<=', $year);
+        });
+        
         // Gunakan withAggregate untuk mengurutkan berdasarkan nama obat
         $batches = $query->select('batch_obat.*')
             ->with(['obat' => function($query) {
@@ -55,6 +61,7 @@ class ReportService
                 'obat_nama' => $obatNama, 
                 'batch_no' => $batch->nomor_batch,
                 'ed' => $batch->tanggal_ed->format('Y-m-d'),
+                'tanggal_masuk' => $batch->tanggal_masuk ? $batch->tanggal_masuk->format('Y-m-d') : '-',
                 'hpp_unit' => $batch->harga_beli_per_satuan,
                 'saldo_awal_qty' => 0,
                 'saldo_awal_value' => 0,
@@ -146,7 +153,22 @@ class ReportService
                 $previousValue = $currentValue;
             }
 
-            $reportData[] = $currentData;
+            // Hanya tambahkan ke reportData jika ada aktivitas di tahun ini
+            // (Memiliki saldo awal atau ada mutasi di bulan tertentu)
+            $hasActivity = $currentData['saldo_awal_qty'] != 0 || $currentData['saldo_awal_value'] != 0;
+            
+            if (!$hasActivity) {
+                foreach ($currentData['months'] as $monthData) {
+                    if ($monthData['masuk_qty'] != 0 || $monthData['keluar_qty'] != 0 || $monthData['penyesuaian_qty'] != 0) {
+                        $hasActivity = true;
+                        break;
+                    }
+                }
+            }
+            
+            if ($hasActivity) {
+                $reportData[] = $currentData;
+            }
         }
 
         // Urutkan array hasil berdasarkan nama obat (jika ada data)

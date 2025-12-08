@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 class StockOpnameController extends Controller
 {
     /**
-     * Menampilkan daftar Batch yang siap di Stock Opname.
+     * Menampilkan daftar Batch yang siap di Input Sisa Stock.
      */
     // app/Http/Controllers/StockOpnameController.php (Index Method)
 
@@ -33,7 +33,7 @@ class StockOpnameController extends Controller
     }
 
     /**
-     * Memproses hasil Stock Opname.
+     * Memproses hasil Input Sisa Stock.
      */
     // public function process(Request $request)
     // {
@@ -95,7 +95,7 @@ class StockOpnameController extends Controller
     //             }
     //         }
     //         DB::commit();
-    //         return redirect()->route('transaksi.stock-opname.index')->with('success', "Proses Stock Opname berhasil. {$processedCount} batch disesuaikan.");
+    //         return redirect()->route('transaksi.stock-opname.index')->with('success', "Proses Input Sisa Stock berhasil. {$processedCount} batch disesuaikan.");
             
     //     } catch (\Exception $e) {
     //         DB::rollBack();
@@ -165,7 +165,7 @@ class StockOpnameController extends Controller
                 }
             }
             DB::commit();
-            return redirect()->route('transaksu.stock-opname.index')->with('success', "Proses Stock Opname berhasil. {$processedCount} penyesuaian dicatat.");
+            return redirect()->route('transaksu.stock-opname.index')->with('success', "Proses Input Sisa Stock berhasil. {$processedCount} penyesuaian dicatat.");
 
         } catch (\Exception $e) {
             DB::rollBack();

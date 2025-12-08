@@ -1,11 +1,33 @@
 @extends('layouts.master')
 @section('title') Laporan Perpetual @endsection
 @section('css')
-{{-- Select2 --}}
-
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 {{-- Flatpickr --}}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<style>
+    .suggestion-item {
+        cursor: pointer;
+        padding: 8px 12px;
+        transition: background-color 0.2s;
+    }
+    .suggestion-item:hover {
+        background-color: #f8f9fa;
+    }
+    #selected-obats .badge {
+        font-size: 0.9em;
+        padding: 6px 12px;
+        margin-right: 8px;
+        margin-bottom: 8px;
+    }
+    .remove-obat:hover {
+        color: #fff;
+        opacity: 0.8;
+    }
+    #obat-suggestions {
+        max-height: 200px;
+        overflow-y: auto;
+        border: 1px solid #dee2e6;
+    }
+</style>
 @endsection
 @section('content')
 @component('components.breadcrumb')
@@ -59,16 +81,19 @@
                         </div>
                         <div class="col-md-7">
                             <label for="obat_id" class="form-label">Filter Multiple Obat (Opsional)</label>
-                            <select class="js-example-basic-multiple" id="obat_id" name="obat_id[]" multiple="multiple">
-                                <option value="">Semua Obat</option>
+                            <input type="text" class="form-control" id="obat_id" placeholder="Ketik untuk mencari obat...">
+                            <div id="selected-obats" class="mt-2"></div>
+                            <div id="obat-suggestions" class="position-absolute bg-white shadow-sm rounded p-2" style="display: none; z-index: 1000; width: 95%;"></div>
+                            <!-- Hidden inputs for form submission -->
+                            <div id="hidden-inputs">
                                 @if(!empty($selectedObats))
                                     @foreach($selectedObats as $obat)
-                                        <option value="{{ $obat->id }}" selected>[{{ $obat->kode_obat }}] {{ $obat->nama_obat }}</option>
+                                        <input type="hidden" name="obat_id[]" value="{{ $obat->id }}">
                                     @endforeach
                                 @endif
-                            </select>
+                            </div>
                         </div>
-                        <div class="col-md-3 d-flex align-items-end gap-2">
+                        <div class="col-md-3 d-flex align-items-end gap-2 mb-2">
                             <button type="submit" class="btn btn-primary w-100">Tampilkan</button>
                             <button type="button" class="btn btn-warning w-100" onclick="window.location='{{ route('laporan.perpetual.index') }}'">
                                 <i class="ri-refresh-line align-bottom me-1"></i> Refresh
@@ -106,6 +131,7 @@
                                 <th class="text-center align-middle" rowspan="3" style="border:1px solid #999;">Nama Obat</th>
                                 <th class="text-center align-middle" rowspan="3" style="border:1px solid #999;">No. Batch</th>
                                 <th class="text-center align-middle" rowspan="3" style="border:1px solid #999;">Tgl ED</th>
+                                <th class="text-center align-middle" rowspan="3" style="border:1px solid #999;">Tgl Masuk</th>
                                 <th class="text-center align-middle" rowspan="3" style="border:1px solid #999;">HPP Satuan</th>
                                 <th class="text-center align-middle" colspan="2" rowspan="1" style="border:1px solid #999;">Saldo Awal {{ $tahun }}</th>
 
@@ -140,7 +166,7 @@
                                     @endphp
                                     <th colspan="2" style="background-color: {{ $bg }}; border:1px solid #c9c9c9ff;">Masuk (Beli)</th>
                                     <th colspan="2" style="background-color: {{ $bg }}; border:0px solid #c9c9c9ff;">Keluar (Pakai)</th>
-                                    <th colspan="2" style="background-color: {{ $bg }}; border:1px solid #c9c9c9ff;">Penyesuaian</th>
+                                    <th colspan="2" style="background-color: {{ $bg }}; border:1px solid #c9c9c9ff;">Sisa Stok</th>
                                 @endfor
                             </tr>
 
@@ -165,7 +191,8 @@
                                 <tr>
                                     <td>{{ $data['obat_nama'] }}</td>
                                     <td>{{ $data['batch_no'] }}</td>
-                                    <td>{{ $data['ed'] }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($data['ed'])->format('d-m-Y') }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($data['tanggal_masuk'])->format('d-m-Y') }}</td>
                                     <td>{{ number_format($data['hpp_unit'], 2) }}</td>
                                     
                                     {{-- Saldo Awal --}}
@@ -185,7 +212,7 @@
                                             <td class="text-end text-danger">{{ number_format($mutasi['keluar_qty'], 0) }}</td>
                                             <td class="text-end text-danger">{{ number_format($mutasi['keluar_value'], 2) }}</td>
                                             
-                                            {{-- Penyesuaian (QTY bisa negatif) --}}
+                                            {{-- Sisa Stok (QTY bisa negatif) --}}
                                             <td class="text-end {{ $mutasi['penyesuaian_qty'] >= 0 ? 'text-info' : 'text-warning' }}">{{ number_format($mutasi['penyesuaian_qty'], 0) }}</td>
                                             <td class="text-end {{ $mutasi['penyesuaian_value'] >= 0 ? 'text-info' : 'text-warning' }}">{{ number_format($mutasi['penyesuaian_value'], 2) }}</td>
                                             
@@ -229,39 +256,103 @@
 <script src="{{ URL::asset('build/js/app.js') }}"></script>
 <script>
         $(document).ready(function() {
-        // Initialize Select2 with AJAX and multiple selection
-        $('#obat_id').select2({
-            allowClear: true,
-            ajax: {
-                url: '/api/obat',
-                dataType: 'json',
-                delay: 250,
-                data: function(params) {
-                    return {
-                        search: params.term,
-                        page: params.page || 1,
-                        selected: $('#obat_id').val() 
-                    };
-                },
-                processResults: function(data, params) {
-                    params.page = params.page || 1;
+            let selectedObats = new Map();
+            let typingTimer;
+            const doneTypingInterval = 300;
+            
+            // Initialize selected obats if any
+            @if(!empty($selectedObats))
+                @foreach($selectedObats as $obat)
+                    selectedObats.set("{{ $obat->id }}", {
+                        id: "{{ $obat->id }}",
+                        kode: "{{ $obat->kode_obat }}",
+                        nama: "{{ $obat->nama_obat }}"
+                    });
+                @endforeach
+                renderSelectedObats();
+            @endif
 
-                    return {
-                        results: data.data.map(function(item) {
-                            return {
-                                id: item.id,
-                                text: '[' + item.kode_obat + '] ' + item.nama_obat
-                            };
-                        }),
-                        pagination: {
-                            more: (params.page * 10) < data.total
-                        }
-                    };
-                },
-                cache: true
-            },
-            minimumInputLength: 1
+            $('#obat_id').on('input', function() {
+                clearTimeout(typingTimer);
+                const searchTerm = $(this).val();
+                
+                if (searchTerm.length > 0) {
+                    typingTimer = setTimeout(() => searchObat(searchTerm), doneTypingInterval);
+                } else {
+                    $('#obat-suggestions').hide();
+                }
+            });
+
+            function searchObat(term) {
+                $.ajax({
+                    url: '/api/obat',
+                    data: { search: term },
+                    success: function(response) {
+                        let suggestions = response.data.map(item => `
+                            <div class="suggestion-item p-2 cursor-pointer hover:bg-gray-100"
+                                 data-id="${item.id}"
+                                 data-kode="${item.kode_obat}"
+                                 data-nama="${item.nama_obat}">
+                                [${item.kode_obat}] ${item.nama_obat}
+                            </div>
+                        `).join('');
+                        
+                        $('#obat-suggestions')
+                            .html(suggestions)
+                            .show();
+                    }
+                });
+            }
+
+            // Handle suggestion click
+            $(document).on('click', '.suggestion-item', function() {
+                const id = $(this).data('id');
+                const kode = $(this).data('kode');
+                const nama = $(this).data('nama');
+                
+                // Add to selected obats if not already selected
+                if (!selectedObats.has(id)) {
+                    selectedObats.set(id, { id, kode, nama });
+                    renderSelectedObats();
+                }
+                
+                // Clear input and suggestions
+                $('#obat_id').val('');
+                $('#obat-suggestions').hide();
+            });
+
+            // Handle selected obat removal
+            $(document).on('click', '.remove-obat', function() {
+                const id = $(this).data('id');
+                selectedObats.delete(id);
+                renderSelectedObats();
+            });
+
+            // Close suggestions when clicking outside
+            $(document).on('click', function(e) {
+                if (!$(e.target).closest('#obat_id, #obat-suggestions').length) {
+                    $('#obat-suggestions').hide();
+                }
+            });
+
+            function renderSelectedObats() {
+                // Render selected obats tags
+                const tags = Array.from(selectedObats.values()).map(obat => `
+                    <span class="badge bg-primary me-2 mb-2">
+                        [${obat.kode}] ${obat.nama}
+                        <i class="ri-close-line ms-1 remove-obat" data-id="${obat.id}" style="cursor: pointer;"></i>
+                    </span>
+                `).join('');
+                
+                $('#selected-obats').html(tags);
+
+                // Update hidden inputs for form submission
+                const hiddenInputs = Array.from(selectedObats.values()).map(obat => 
+                    `<input type="hidden" name="obat_id[]" value="${obat.id}">`
+                ).join('');
+                
+                $('#hidden-inputs').html(hiddenInputs);
+            }
         });
-    });
 </script>
 @endsection

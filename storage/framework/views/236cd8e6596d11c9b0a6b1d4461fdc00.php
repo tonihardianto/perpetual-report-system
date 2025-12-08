@@ -1,10 +1,32 @@
 <?php $__env->startSection('title'); ?> Laporan Perpetual <?php $__env->stopSection(); ?>
 <?php $__env->startSection('css'); ?>
 
-
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<style>
+    .suggestion-item {
+        cursor: pointer;
+        padding: 8px 12px;
+        transition: background-color 0.2s;
+    }
+    .suggestion-item:hover {
+        background-color: #f8f9fa;
+    }
+    #selected-obats .badge {
+        font-size: 0.9em;
+        padding: 6px 12px;
+        margin-right: 8px;
+        margin-bottom: 8px;
+    }
+    .remove-obat:hover {
+        color: #fff;
+        opacity: 0.8;
+    }
+    #obat-suggestions {
+        max-height: 200px;
+        overflow-y: auto;
+        border: 1px solid #dee2e6;
+    }
+</style>
 <?php $__env->stopSection(); ?>
 <?php $__env->startSection('content'); ?>
 <?php $__env->startComponent('components.breadcrumb'); ?>
@@ -58,16 +80,19 @@
                         </div>
                         <div class="col-md-7">
                             <label for="obat_id" class="form-label">Filter Multiple Obat (Opsional)</label>
-                            <select class="js-example-basic-multiple" id="obat_id" name="obat_id[]" multiple="multiple">
-                                <option value="">Semua Obat</option>
+                            <input type="text" class="form-control" id="obat_id" placeholder="Ketik untuk mencari obat...">
+                            <div id="selected-obats" class="mt-2"></div>
+                            <div id="obat-suggestions" class="position-absolute bg-white shadow-sm rounded p-2" style="display: none; z-index: 1000; width: 95%;"></div>
+                            <!-- Hidden inputs for form submission -->
+                            <div id="hidden-inputs">
                                 <?php if(!empty($selectedObats)): ?>
                                     <?php $__currentLoopData = $selectedObats; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $obat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <option value="<?php echo e($obat->id); ?>" selected>[<?php echo e($obat->kode_obat); ?>] <?php echo e($obat->nama_obat); ?></option>
+                                        <input type="hidden" name="obat_id[]" value="<?php echo e($obat->id); ?>">
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 <?php endif; ?>
-                            </select>
+                            </div>
                         </div>
-                        <div class="col-md-3 d-flex align-items-end gap-2">
+                        <div class="col-md-3 d-flex align-items-end gap-2 mb-2">
                             <button type="submit" class="btn btn-primary w-100">Tampilkan</button>
                             <button type="button" class="btn btn-warning w-100" onclick="window.location='<?php echo e(route('laporan.perpetual.index')); ?>'">
                                 <i class="ri-refresh-line align-bottom me-1"></i> Refresh
@@ -105,6 +130,7 @@
                                 <th class="text-center align-middle" rowspan="3" style="border:1px solid #999;">Nama Obat</th>
                                 <th class="text-center align-middle" rowspan="3" style="border:1px solid #999;">No. Batch</th>
                                 <th class="text-center align-middle" rowspan="3" style="border:1px solid #999;">Tgl ED</th>
+                                <th class="text-center align-middle" rowspan="3" style="border:1px solid #999;">Tgl Masuk</th>
                                 <th class="text-center align-middle" rowspan="3" style="border:1px solid #999;">HPP Satuan</th>
                                 <th class="text-center align-middle" colspan="2" rowspan="1" style="border:1px solid #999;">Saldo Awal <?php echo e($tahun); ?></th>
 
@@ -140,7 +166,7 @@
                                     ?>
                                     <th colspan="2" style="background-color: <?php echo e($bg); ?>; border:1px solid #c9c9c9ff;">Masuk (Beli)</th>
                                     <th colspan="2" style="background-color: <?php echo e($bg); ?>; border:0px solid #c9c9c9ff;">Keluar (Pakai)</th>
-                                    <th colspan="2" style="background-color: <?php echo e($bg); ?>; border:1px solid #c9c9c9ff;">Penyesuaian</th>
+                                    <th colspan="2" style="background-color: <?php echo e($bg); ?>; border:1px solid #c9c9c9ff;">Sisa Stok</th>
                                 <?php endfor; ?>
                             </tr>
 
@@ -165,7 +191,8 @@
                                 <tr>
                                     <td><?php echo e($data['obat_nama']); ?></td>
                                     <td><?php echo e($data['batch_no']); ?></td>
-                                    <td><?php echo e($data['ed']); ?></td>
+                                    <td><?php echo e(\Carbon\Carbon::parse($data['ed'])->format('d-m-Y')); ?></td>
+                                    <td><?php echo e(\Carbon\Carbon::parse($data['tanggal_masuk'])->format('d-m-Y')); ?></td>
                                     <td><?php echo e(number_format($data['hpp_unit'], 2)); ?></td>
                                     
                                     
@@ -229,40 +256,104 @@
 <script src="<?php echo e(URL::asset('build/js/app.js')); ?>"></script>
 <script>
         $(document).ready(function() {
-        // Initialize Select2 with AJAX and multiple selection
-        $('#obat_id').select2({
-            allowClear: true,
-            ajax: {
-                url: '/api/obat',
-                dataType: 'json',
-                delay: 250,
-                data: function(params) {
-                    return {
-                        search: params.term,
-                        page: params.page || 1,
-                        selected: $('#obat_id').val() 
-                    };
-                },
-                processResults: function(data, params) {
-                    params.page = params.page || 1;
+            let selectedObats = new Map();
+            let typingTimer;
+            const doneTypingInterval = 300;
+            
+            // Initialize selected obats if any
+            <?php if(!empty($selectedObats)): ?>
+                <?php $__currentLoopData = $selectedObats; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $obat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    selectedObats.set("<?php echo e($obat->id); ?>", {
+                        id: "<?php echo e($obat->id); ?>",
+                        kode: "<?php echo e($obat->kode_obat); ?>",
+                        nama: "<?php echo e($obat->nama_obat); ?>"
+                    });
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                renderSelectedObats();
+            <?php endif; ?>
 
-                    return {
-                        results: data.data.map(function(item) {
-                            return {
-                                id: item.id,
-                                text: '[' + item.kode_obat + '] ' + item.nama_obat
-                            };
-                        }),
-                        pagination: {
-                            more: (params.page * 10) < data.total
-                        }
-                    };
-                },
-                cache: true
-            },
-            minimumInputLength: 1
+            $('#obat_id').on('input', function() {
+                clearTimeout(typingTimer);
+                const searchTerm = $(this).val();
+                
+                if (searchTerm.length > 0) {
+                    typingTimer = setTimeout(() => searchObat(searchTerm), doneTypingInterval);
+                } else {
+                    $('#obat-suggestions').hide();
+                }
+            });
+
+            function searchObat(term) {
+                $.ajax({
+                    url: '/api/obat',
+                    data: { search: term },
+                    success: function(response) {
+                        let suggestions = response.data.map(item => `
+                            <div class="suggestion-item p-2 cursor-pointer hover:bg-gray-100"
+                                 data-id="${item.id}"
+                                 data-kode="${item.kode_obat}"
+                                 data-nama="${item.nama_obat}">
+                                [${item.kode_obat}] ${item.nama_obat}
+                            </div>
+                        `).join('');
+                        
+                        $('#obat-suggestions')
+                            .html(suggestions)
+                            .show();
+                    }
+                });
+            }
+
+            // Handle suggestion click
+            $(document).on('click', '.suggestion-item', function() {
+                const id = $(this).data('id');
+                const kode = $(this).data('kode');
+                const nama = $(this).data('nama');
+                
+                // Add to selected obats if not already selected
+                if (!selectedObats.has(id)) {
+                    selectedObats.set(id, { id, kode, nama });
+                    renderSelectedObats();
+                }
+                
+                // Clear input and suggestions
+                $('#obat_id').val('');
+                $('#obat-suggestions').hide();
+            });
+
+            // Handle selected obat removal
+            $(document).on('click', '.remove-obat', function() {
+                const id = $(this).data('id');
+                selectedObats.delete(id);
+                renderSelectedObats();
+            });
+
+            // Close suggestions when clicking outside
+            $(document).on('click', function(e) {
+                if (!$(e.target).closest('#obat_id, #obat-suggestions').length) {
+                    $('#obat-suggestions').hide();
+                }
+            });
+
+            function renderSelectedObats() {
+                // Render selected obats tags
+                const tags = Array.from(selectedObats.values()).map(obat => `
+                    <span class="badge bg-primary me-2 mb-2">
+                        [${obat.kode}] ${obat.nama}
+                        <i class="ri-close-line ms-1 remove-obat" data-id="${obat.id}" style="cursor: pointer;"></i>
+                    </span>
+                `).join('');
+                
+                $('#selected-obats').html(tags);
+
+                // Update hidden inputs for form submission
+                const hiddenInputs = Array.from(selectedObats.values()).map(obat => 
+                    `<input type="hidden" name="obat_id[]" value="${obat.id}">`
+                ).join('');
+                
+                $('#hidden-inputs').html(hiddenInputs);
+            }
         });
-    });
 </script>
 <?php $__env->stopSection(); ?>
 <?php echo $__env->make('layouts.master', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH /Users/toni/Apps/laravel/perpetual-report-system/resources/views/laporan/perpetual/index.blade.php ENDPATH**/ ?>

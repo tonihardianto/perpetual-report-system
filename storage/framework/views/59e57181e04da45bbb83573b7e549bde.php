@@ -5,10 +5,10 @@
     <meta charset="utf-8" />
     <title><?php echo $__env->yieldContent('title'); ?> | SIPOTEK</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta content="Sistem Informasi Stock Opname" name="description" />
+    <meta content="Sistem Informasi Input Sisa Stock" name="description" />
     <meta content="Toni Hardianto" name="author" />
     <!-- App favicon -->
-    <link rel="shortcut icon" href="<?php echo e(URL::asset('icon.png')); ?>">
+    <link rel="shortcut icon" href="<?php echo e(URL::asset('images/logo.png')); ?>">
     <?php echo $__env->make('layouts.head-css', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 </head>
 
