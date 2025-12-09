@@ -50,11 +50,11 @@
                             </div>
 
                             <div class="dropdown-item bg-transparent text-wrap">
-                                <a href="{{ route('master-obat') }}" class="btn btn-soft-secondary btn-sm rounded-pill">master obat <i
+                                <a href="{{ route('master-obat.index') }}" class="btn btn-soft-secondary btn-sm rounded-pill">master obat <i
                                         class="mdi mdi-magnify ms-1"></i></a>
-                                <a href="{{ route('transaksi-index') }}" class="btn btn-soft-secondary btn-sm rounded-pill">transaksi
+                                <a href="{{ route('transaksi.mutasi.index') }}" class="btn btn-soft-secondary btn-sm rounded-pill">transaksi
                                     <i class="mdi mdi-magnify ms-1"></i></a>
-                                <a href="{{ route('laporan-perpetual') }}"
+                                <a href="{{ route('laporan.perpetual.index') }}"
                                     class="btn btn-soft-secondary btn-sm rounded-pill mt-1">perpetual <i
                                         class="mdi mdi-magnify ms-1"></i></a>
                             </div>
@@ -70,19 +70,19 @@
                             </a>
 
                             <!-- item-->
-                            <a href="{{ route('master-obat') }}" class="dropdown-item notify-item">
+                            <a href="{{ route('master-obat.index') }}" class="dropdown-item notify-item">
                                 <i class="ri-lifebuoy-line align-middle fs-18 text-muted me-2"></i>
                                 <span>Master Obat</span>
                             </a>
 
                             <!-- item-->
-                            <a href="{{ route('laporan-perpetual') }}" class="dropdown-item notify-item">
+                            <a href="{{ route('laporan.perpetual.index') }}" class="dropdown-item notify-item">
                                 <i class="ri-user-settings-line align-middle fs-18 text-muted me-2"></i>
                                 <span>Laporan Perpetual</span>
                             </a>
 
                             <!-- item -->
-                            <a href="{{ route('stock-opname') }}" class="dropdown-item notify-item">
+                            <a href="{{ route('transaksi.stock-opname.index') }}" class="dropdown-item notify-item">
                                 <i class="ri-user-settings-line align-middle fs-18 text-muted me-2"></i>
                                 <span>Stok Opname</span>
                             </a>
