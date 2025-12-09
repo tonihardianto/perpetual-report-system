@@ -37,28 +37,28 @@
 
                 @can('manage obat')
                 <li class="nav-item">
-                    <a href="/master-obat" class="nav-link"><i class="mdi mdi-pill-multiple"></i> Master Obat
+                    <a href="{{ route('master-obat.index') }}" class="nav-link"><i class="mdi mdi-pill-multiple"></i> Master Obat
                     </a>
                 </li>
                 @endcan
 
                 @can('process mutasi')
                 <li class="nav-item">
-                    <a href="/transaksi-index" class="nav-link"><i class="mdi mdi-swap-horizontal"></i> Transaksi
+                    <a href="{{ route('transaksi.mutasi.index') }}" class="nav-link"><i class="mdi mdi-swap-horizontal"></i> Transaksi
                     </a>
                 </li>
                 @endcan
 
                 @can('perform stock-opname')
                 <li class="nav-item">
-                    <a href="/stock-opname" class="nav-link"><i class="mdi mdi-package"></i> Input Sisa Stock
+                    <a href="{{ route('transaksi.stock-opname.index') }}" class="nav-link"><i class="mdi mdi-package"></i> Input Sisa Stock
                     </a>
                 </li>
                 @endcan
 
                 @can('view reports')
                 <li class="nav-item">
-                    <a href="/laporan-perpetual" class="nav-link"><i class="mdi mdi-file"></i> Laporan Perpetual
+                    <a href="{{ route('laporan.perpetual.index') }}" class="nav-link"><i class="mdi mdi-file"></i> Laporan Perpetual
                     </a>
                 </li>
                 @endcan
@@ -66,11 +66,11 @@
                 @role('super-admin')
                 <li class="menu-title"><span>Administration</span></li>
                 <li class="nav-item">
-                    <a href="/admin/users" class="nav-link"><i class="mdi mdi-account-multiple"></i> User Management
+                    <a href="{{ route('admin.users.index') }}" class="nav-link"><i class="mdi mdi-account-multiple"></i> User Management
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="/admin/roles" class="nav-link"><i class="mdi mdi-shield-account"></i> Role Management
+                    <a href="{{ route('admin.roles.index') }}" class="nav-link"><i class="mdi mdi-shield-account"></i> Role Management
                     </a>
                 </li>
                 @endrole
