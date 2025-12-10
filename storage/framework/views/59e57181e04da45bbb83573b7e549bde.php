@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8" />
-    <title><?php echo $__env->yieldContent('title'); ?> | SIPOTEK</title>
+    <title><?php echo $__env->yieldContent('title'); ?> | SIBIMOSENO</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="Sistem Informasi Input Sisa Stock" name="description" />
     <meta content="Toni Hardianto" name="author" />

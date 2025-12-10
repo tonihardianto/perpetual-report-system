@@ -240,7 +240,7 @@ unset($__errorArgs, $__bag); ?>
                         <div class="text-center">
                             <script>
                                 document.write(new Date().getFullYear())
-                            </script> SIPOTEK. Crafted with <i
+                            </script> SIBIMOSENO. Crafted with <i
                                     class="mdi mdi-heart text-danger"></i> by Toni Hardianto </p>
                         </div>
                     </div>
