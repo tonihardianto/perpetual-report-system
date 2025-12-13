@@ -37,7 +37,7 @@ class PerpetualReportController extends Controller
             \Log::info('Report Data:', ['count' => count($reportData), 'sample' => !empty($reportData) ? $reportData[0] : null]);
         }
 
-        $years = range(date('Y'), 2020); // Tahun laporan dari 2020 hingga tahun ini
+        $years = range(date('Y'), 2025); // Tahun laporan dari 2020 hingga tahun ini
         
         return view('laporan.perpetual.index', compact('reportData', 'obats', 'tahun', 'years', 'obatIds'));
     }
